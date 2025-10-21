@@ -1,8 +1,9 @@
-// This class is a recursive-descent parser,
-// modeled after the programming language's grammar.
-// It constructs and has-a Scanner for the program
-// being parsed.
-
+/**
+ * A recursive-descent parser for the source language.
+ * It uses a Scanner to tokenize the input program and builds an
+ * Abstract Syntax Tree (AST) composed of Node objects. The parsing
+ * logic directly models the grammar rules.
+ */
 public class Parser {
 
 	private Scanner scanner;
@@ -101,6 +102,12 @@ public class Parser {
 		return stmt;
 	}
 
+	/**
+	 * Parses a complete source program string into an AST.
+	 * @param program The source program to parse.
+	 * @return The root Node of the generated AST.
+	 * @throws SyntaxException if the program violates the grammar rules.
+	 */
 	public Node parse(String program) throws SyntaxException {
 		scanner = new Scanner(program);
 		scanner.next();

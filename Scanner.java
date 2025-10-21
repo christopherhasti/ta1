@@ -1,8 +1,10 @@
-// This class is a scanner for the program
-// and programming language being interpreted.
-
 import java.util.*;
 
+/**
+ * A lexical analyzer (scanner) for the source language.
+ * It tokenizes the input program string, handling identifiers, numbers (doubles),
+ * operators, whitespace, and comments.
+ */
 public class Scanner {
 
 	private String program;		// source program being interpreted
@@ -58,9 +60,10 @@ public class Scanner {
 	private void initKeywords(Set<String> s) {
 	}
 
-	// constructor:
-	//     - squirrel-away source program
-	//     - initialize sets
+	/**
+	 * Constructs a new Scanner for the given program string.
+	 * @param program The source code to be scanned.
+	 */
 	public Scanner(String program) {
 		this.program=program;
 		pos=0;
@@ -84,15 +87,12 @@ public class Scanner {
 			pos++;
 	}
 
-	// This method advances the scanner,
-	// until the current input character
-	// is just after a sequence of one or more
-	// of a particular character.
-	// Arguments:
-	//     c = the character to search for
-	// Members:
-	//     program = the scanner's input
-	//     pos = index of current input character
+	/**
+	 * This method advances the scanner,
+	 * until the current input character
+	 * is just after the first occurrence of a particular character.
+	 * @param c the character to search for
+	 */
 	private void past(char c) {
 		while (!done()&&c!=program.charAt(pos))
 			pos++;
@@ -135,8 +135,11 @@ public class Scanner {
 		token=new Token(lexeme); // one-char operator
 	}
 
-	// This method determines the kind of the next token (e.g., "id"),
-	// and calls a method to scan that token's lexeme (e.g., "foo").
+	/**
+	 * Advances the scanner to the next token in the program string.
+	 * It skips over whitespace and comments.
+	 * @return true if a token was found, false if the end of the program is reached.
+	 */
 	public boolean next() {
 		boolean ateComment;
 		do {
@@ -168,20 +171,33 @@ public class Scanner {
 		return true;
 	}
 
-	// This method scans the next lexeme,
-	// if the current token is the expected token.
+	/**
+	 * Matches the current token against an expected token.
+	 * If they match, it advances the scanner. If not, it throws a SyntaxException.
+	 * @param t The expected token.
+	 * @throws SyntaxException if the current token does not match the expected one.
+	 */
 	public void match(Token t) throws SyntaxException {
 		if (!t.equals(curr()))
 			throw new SyntaxException(pos,t,curr());
 		next();
 	}
 
+	/**
+	 * Returns the current token.
+	 * @return The current token.
+	 * @throws SyntaxException if no token has been scanned yet.
+	 */
 	public Token curr() throws SyntaxException {
 		if (token==null)
 			throw new SyntaxException(pos,new Token("ANY"),new Token("EMPTY"));
 		return token;
 	}
 
+	/**
+	 * Returns the current position (index) in the program string.
+	 * @return the current character position.
+	 */
 	public int pos() {
 		return pos;
 	}

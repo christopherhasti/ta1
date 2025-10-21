@@ -1,5 +1,11 @@
 import java.io.*;
 
+/**
+ * Manages the generation of the output C code file.
+ * It writes a standard C prologue, the translated code from the AST,
+ * variable declarations from the environment, and a standard epilogue.
+ * The output file name is determined by the "Code" environment variable.
+ */
 public class Code {
 
 	private final String[] prologue={
@@ -12,6 +18,12 @@ public class Code {
 		"}",
 	};
 
+	/**
+	 * Constructs a Code object and writes the complete C program to a file.
+	 * If the "Code" environment variable is not set, it does nothing.
+	 * @param code The translated C code generated from the AST nodes.
+	 * @param env The environment containing the variables to be declared.
+	 */
 	public Code(String code, Environment env) {
 		String fn=System.getenv("Code");
 		if (fn==null)
