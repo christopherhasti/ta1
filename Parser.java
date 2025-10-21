@@ -44,6 +44,11 @@ public class Parser {
 	}
 
 	private NodeFact parseFact() throws SyntaxException {
+		if (curr().equals(new Token("-"))) {
+			match("-");
+			NodeFact fact = parseFact();
+			return new NodeFactUnary(pos(), fact);
+		}
 		if (curr().equals(new Token("("))) {
 			match("(");
 			NodeExpr expr = parseExpr();

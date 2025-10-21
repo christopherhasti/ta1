@@ -105,6 +105,10 @@ public class Scanner {
 	private void nextNumber() {
 		int old=pos;
 		many(digits);
+		if (!done() && program.charAt(pos) == '.') {
+			pos++;
+			many(digits);
+		}
 		token=new Token("num",program.substring(old,pos));
 	}
 
@@ -134,11 +138,21 @@ public class Scanner {
 	// This method determines the kind of the next token (e.g., "id"),
 	// and calls a method to scan that token's lexeme (e.g., "foo").
 	public boolean next() {
-		many(whitespace);
-		if (done()) {
-			token=new Token("EOF");
-			return false;
-		}
+		boolean ateComment;
+		do {
+			ateComment = false;
+			many(whitespace);
+			if (done()) {
+				token=new Token("EOF");
+				return false;
+			}
+			// Check for '//' comment
+			if (program.startsWith("//", pos)) {
+				ateComment = true;
+				past('\n'); // Scan until past the newline
+			}
+		} while (ateComment); // Loop to handle multiple comment lines or whitespace
+
 		String c=program.charAt(pos)+"";
 		if (digits.contains(c))
 			nextNumber();

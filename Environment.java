@@ -15,24 +15,53 @@
 
 public class Environment {
 
-	private String[] map = { "x" };
+	private Map<String, Double> map;
 
-	public int put(String var, int val) {
+	/**
+	 * Constructs a new, empty Environment.
+	 */
+	public Environment() {
+		map = new HashMap<>();
+	}
+
+	/**
+	 * Stores a variable and its value in the environment.
+	 * @param var The name of the variable (e.g., "x").
+	 * @param val The double value to store.
+	 * @return The value that was stored.
+	 */
+	public double put(String var, double val) {
+		map.put(var, val);
 		return val;
 	}
 
-	public int get(int pos, String var) throws EvalException {
-		return 0;
+	/**
+	 * Retrieves the value of a variable from the environment.
+	 * @param pos The position in the source code (for error reporting).
+	 * @param var The name of the variable to retrieve.
+	 * @return The double value of the variable.
+	 * @throws EvalException if the variable is not defined.
+	 */
+	public double get(int pos, String var) throws EvalException {
+		Double val = map.get(var);
+		if (val == null) {
+			throw new EvalException(pos, "undefined variable: " + var);
+		}
+		return val;
 	}
 
+	/**
+	 * Generates C code to declare all variables used in this environment.
+	 * @return A string of C code, e.g., "double x,y;".
+	 */
 	public String toC() {
 		String s = "";
 		String sep = " ";
-		for (String v : map) {
+		for (String v : map.keySet()) {
 			s += sep + v;
 			sep = ",";
 		}
-		return s == "" ? "" : "int" + s + ";\nx=0;x=x;\n";
+		return s == "" ? "" : "double" + s + ";\n";
 	}
 
 }
