@@ -20,8 +20,14 @@ public class NodeFactNum extends NodeFact {
 
 	/**
 	 * Generates C code for the number literal.
-	 * @return The number as a string.
+	 * Appends ".0" to integers to force floating-point division in C.
+	 * @return The number as a string (e.g., "5.0" or "3.14").
 	 */
-	public String code() { return num; }
+	public String code() {
+		if (num.contains(".")) {
+			return num;
+		}
+		return num + ".0";
+	}
 
 }
