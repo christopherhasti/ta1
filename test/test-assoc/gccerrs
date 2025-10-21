@@ -1,0 +1,7 @@
+test-assoc/gen.c: In function ‘main’:
+test-assoc/gen.c:3:13: warning: variable ‘y’ set but not used [-Wunused-but-set-variable]
+    3 |   double x, y;
+      |             ^
+test-assoc/gen.c:3:10: warning: variable ‘x’ set but not used [-Wunused-but-set-variable]
+    3 |   double x, y;
+      |          ^

@@ -1,0 +1,4 @@
+test-plus/gen.c: In function ‘main’:
+test-plus/gen.c:3:10: warning: variable ‘x’ set but not used [-Wunused-but-set-variable]
+    3 |   double x;
+      |          ^

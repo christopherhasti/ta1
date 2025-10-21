@@ -1,0 +1,4 @@
+test-double-div/gen.c: In function ‘main’:
+test-double-div/gen.c:3:10: warning: variable ‘x’ set but not used [-Wunused-but-set-variable]
+    3 |   double x;
+      |          ^
