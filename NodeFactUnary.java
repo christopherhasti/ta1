@@ -21,6 +21,7 @@ public class NodeFactUnary extends NodeFact {
 	 * @return The negated double value.
 	 * @throws EvalException if the underlying fact cannot be evaluated.
 	 */
+        @Override
 	public double eval(Environment env) throws EvalException {
 		return -fact.eval(env); // Negate the result
 	}

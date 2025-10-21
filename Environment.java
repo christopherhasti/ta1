@@ -13,6 +13,9 @@
 //   http://www.javatpoint.com/java-map
 // and elsewhere.
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Environment {
 
 	private Map<String, Double> map;

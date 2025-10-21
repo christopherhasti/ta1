@@ -1,3 +1,6 @@
+/**
+ * Represents an addition or subtraction operator node (+ or -).
+ */
 public class NodeAddop extends Node {
 
 	private String addop;
