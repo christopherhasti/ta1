@@ -192,16 +192,32 @@ public class Parser {
 
 	/**
 	 * Parses a block, which is a sequence of statements
-	 * separated by semicolons.
+	 * separated by semicolons, according to the grammar:
+	 * block : stmt (';' block)?
 	 */
 	private NodeBlock parseBlock() throws SyntaxException {
 		NodeBlock block = new NodeBlock();
-		// A block continues until 'EOF' or an 'end' token
-		while (!curr().equals(new Token("EOF")) && !curr().equals(new Token("end"))) {
-			NodeStmt stmt = parseStmt();
-			block.addStmt(stmt);
-			match(";");
+
+		// Base case: block is empty (e.g., "begin end" or "EOF")
+		if (curr().equals(new Token("EOF")) || curr().equals(new Token("end"))) {
+			return block;
 		}
+
+		NodeStmt stmt = parseStmt(); // rule: block -> stmt ...
+		block.addStmt(stmt);
+
+		if (curr().equals(new Token(";"))) {
+			match(";");
+			// rule: ... ';' block
+			// Recursively parse the rest of the block
+			NodeBlock restOfBlock = parseBlock(); 
+			// Add all statements from the recursive parse
+			for (NodeStmt s : restOfBlock.getStmts()) {
+				block.addStmt(s);
+			}
+		}
+		
+		// ... or just stmt (no ';', end of block)
 		return block;
 	}
 

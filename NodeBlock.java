@@ -54,4 +54,12 @@ public class NodeBlock extends Node {
 		}
 		return s;
 	}
+
+    /**
+	 * Returns the list of statements in this block.
+	 * @return The list of statements.
+	 */
+	public java.util.List<NodeStmt> getStmts() {
+		return stmts;
+	}
 }
