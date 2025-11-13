@@ -1,0 +1,1 @@
+if 4 < 2 then wr 99; else wr 100;

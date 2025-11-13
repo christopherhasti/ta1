@@ -1,0 +1,7 @@
+rd x; // Read the loop count
+y=0;
+while x > 0 do begin
+  wr y;
+  y = y + 1;
+  x = x - 1;
+end
