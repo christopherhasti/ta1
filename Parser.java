@@ -1,8 +1,7 @@
 /**
- * A recursive-descent parser for the source language.
+ * A recursive-descent parser for the source language (TA2).
  * It uses a Scanner to tokenize the input program and builds an
- * Abstract Syntax Tree (AST) composed of Node objects. The parsing
- * logic directly models the grammar rules.
+ * Abstract Syntax Tree (AST) composed of Node objects.
  */
 public class Parser {
 
@@ -19,6 +18,8 @@ public class Parser {
 	private int pos() {
 		return scanner.pos();
 	}
+
+	// === TA1 Expression Parsers (Unchanged) ===
 
 	private NodeMulop parseMulop() throws SyntaxException {
 		if (curr().equals(new Token("*"))) {
@@ -85,6 +86,29 @@ public class Parser {
 		expr.append(new NodeExpr(term, addop, null));
 		return expr;
 	}
+	
+	// === TA2 New Parsers ===
+
+	private NodeRelop parseRelop() throws SyntaxException {
+		Token op = curr();
+		if (op.equals(new Token("<"))) { match("<"); }
+		else if (op.equals(new Token("<="))) { match("<="); }
+		else if (op.equals(new Token(">"))) { match(">"); }
+		else if (op.equals(new Token(">="))) { match(">="); }
+		else if (op.equals(new Token("<>"))) { match("<>"); }
+		else if (op.equals(new Token("=="))) { match("=="); }
+		else {
+			throw new SyntaxException(pos(), new Token("RELOP"), op);
+		}
+		return new NodeRelop(pos(), op.tok());
+	}
+
+	private NodeBoolexpr parseBoolexpr() throws SyntaxException {
+		NodeExpr expr1 = parseExpr();
+		NodeRelop relop = parseRelop();
+		NodeExpr expr2 = parseExpr();
+		return new NodeBoolexpr(expr1, relop, expr2);
+	}
 
 	private NodeAssn parseAssn() throws SyntaxException {
 		Token id = curr();
@@ -95,25 +119,105 @@ public class Parser {
 		return assn;
 	}
 
+	private NodeRd parseRd() throws SyntaxException {
+		match("rd");
+		Token id = curr();
+		match("id");
+		return new NodeRd(id.lex());
+	}
+
+	private NodeWr parseWr() throws SyntaxException {
+		match("wr");
+		NodeExpr expr = parseExpr();
+		return new NodeWr(expr); // Re-uses the existing NodeWr class
+	}
+
+	private NodeIf parseIf() throws SyntaxException {
+		match("if");
+		NodeBoolexpr boolexpr = parseBoolexpr();
+		match("then");
+		NodeStmt thenStmt = parseStmt();
+		NodeStmt elseStmt = null;
+		if (curr().equals(new Token("else"))) {
+			match("else");
+			elseStmt = parseStmt();
+		}
+		return new NodeIf(boolexpr, thenStmt, elseStmt);
+	}
+
+	private NodeWhile parseWhile() throws SyntaxException {
+		match("while");
+		NodeBoolexpr boolexpr = parseBoolexpr();
+		match("do");
+		NodeStmt stmt = parseStmt();
+		return new NodeWhile(boolexpr, stmt);
+	}
+
+	private NodeBlock parseBeginEnd() throws SyntaxException {
+		match("begin");
+		NodeBlock block = parseBlock(); // Recursively parse the inner block
+		match("end");
+		return block;
+	}
+
+	/**
+	 * Parses a single statement.
+	 * This method checks the current token to decide which
+	 * type of statement to parse (assn, rd, wr, if, while, begin).
+	 */
 	private NodeStmt parseStmt() throws SyntaxException {
-		NodeAssn assn = parseAssn();
-		match(";");
-		NodeStmt stmt = new NodeStmt(assn);
-		return stmt;
+		Token t = curr();
+
+		if (t.equals(new Token("id"))) {
+			return new NodeStmt(parseAssn());
+		}
+		if (t.equals(new Token("rd"))) {
+			return new NodeStmt(parseRd());
+		}
+		if (t.equals(new Token("wr"))) {
+			return new NodeStmt(parseWr());
+		}
+		if (t.equals(new Token("if"))) {
+			return new NodeStmt(parseIf());
+		}
+		if (t.equals(new Token("while"))) {
+			return new NodeStmt(parseWhile());
+		}
+		if (t.equals(new Token("begin"))) {
+			return new NodeStmt(parseBeginEnd());
+		}
+
+		throw new SyntaxException(pos(), new Token("STMT"), t);
+	}
+
+	/**
+	 * Parses a block, which is a sequence of statements
+	 * separated by semicolons.
+	 */
+	private NodeBlock parseBlock() throws SyntaxException {
+		NodeBlock block = new NodeBlock();
+		// A block continues until 'EOF' or an 'end' token
+		while (!curr().equals(new Token("EOF")) && !curr().equals(new Token("end"))) {
+			NodeStmt stmt = parseStmt();
+			block.addStmt(stmt);
+			match(";");
+		}
+		return block;
 	}
 
 	/**
 	 * Parses a complete source program string into an AST.
+	 * The top-level construct is now a block.
 	 * @param program The source program to parse.
-	 * @return The root Node of the generated AST.
+	 * @return The root Node (a NodeBlock) of the generated AST.
 	 * @throws SyntaxException if the program violates the grammar rules.
 	 */
 	public Node parse(String program) throws SyntaxException {
 		scanner = new Scanner(program);
 		scanner.next();
-		NodeStmt stmt = parseStmt();
+		NodeBlock block = parseBlock(); // Top-level rule is now parseBlock()
 		match("EOF");
-		return stmt;
+		return block;
 	}
 
 }

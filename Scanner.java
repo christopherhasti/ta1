@@ -47,6 +47,7 @@ public class Scanner {
 	}
 
 	private void initOperators(Set<String> s) {
+		// TA1 operators
 		s.add("=");
 		s.add("+");
 		s.add("-");
@@ -55,9 +56,27 @@ public class Scanner {
 		s.add("(");
 		s.add(")");
 		s.add(";");
+		
+		// TA2 operators
+		s.add("<");
+		s.add("<=");
+		s.add(">");
+		s.add(">=");
+		s.add("<>");
+		s.add("==");
 	}
 
 	private void initKeywords(Set<String> s) {
+		// TA2 keywords
+		s.add("rd");
+		s.add("wr");
+		s.add("if");
+		s.add("then");
+		s.add("else");
+		s.add("while");
+		s.add("do");
+		s.add("begin");
+		s.add("end");
 	}
 
 	/**
@@ -123,16 +142,16 @@ public class Scanner {
 	private void nextOp() {
 		int old=pos;
 		pos=old+2;
-		if (!done()) {
+		if (pos <= program.length()) { // Check 2-char operators
 			String lexeme=program.substring(old,pos);
 			if (operators.contains(lexeme)) {
 				token=new Token(lexeme); // two-char operator
 				return;
 			}
 		}
-		pos=old+1;
+		pos=old+1; // Fallback to 1-char operator
 		String lexeme=program.substring(old,pos);
-		token=new Token(lexeme); // one-char operator
+		token=new Token(lexeme);
 	}
 
 	/**
@@ -201,16 +220,4 @@ public class Scanner {
 	public int pos() {
 		return pos;
 	}
-
-	// for unit testing
-	public static void main(String[] args) {
-		try {
-			Scanner scanner=new Scanner(args[0]);
-			while (scanner.next())
-				System.out.println(scanner.curr());
-		} catch (SyntaxException e) {
-			System.err.println(e);
-		}
-	}
-
 }
